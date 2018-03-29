@@ -3,29 +3,52 @@ process.env.DEBUG = 'actions-on-google:*'
 const App = require('actions-on-google').DialogflowApp
     , functions = require('firebase-functions')
 
-// a. the action name from the get_name Dialogflow intent
-const NAME_ACTION = 'get_name'
+// intents
+const WELCOME_INTENT = 'input.welcome'
+    , NAME_AND_LOCATION_INTENT = 'input.name_and_location'
 
-// b. the parameters that are parsed from the make_name intent
-const NAME_ARGUMENT = 'name'
+// parameters parsed from the above intents
+const NAME_ARGUMENT = 'input.name'
+    , COUNTRY_ARGUMENT = 'input.country' // versus .live?
 
 
-exports.userName = functions.https.onRequest((req, res) => {
+exports.travel = functions.https.onRequest((req, res) => {
   const app = new App({ req, res })
 
   console.log('Request headers: ' + JSON.stringify(req.headers))
   console.log('Request body: ' + JSON.stringify(req.body))
 
-// c. The function that grabs the user's name
-  function getName(app) {
-    let name = app.getArgument(NAME_ARGUMENT)
+  function responseHandler() {
+    // intent contains the name of the intent you defined in the Actions area of Dialogflow
+    let intent = app.getIntent()
 
-    app.tell(`Nice to meet you ${name}. What is your current country location?`)
+    switch (intent) {
+      case WELCOME_INTENT:
+        let name = app.getArgument(NAME_ARGUMENT)
+          , live = app.getArgument(COUNTRY_ARGUMENT)
+
+        app.ask(`Welcome to By Land or By Sea. What's your name and current country location?
+        Please say it as such: my name is Aloy, and I live in the United States.`)
+        break;
+
+      case NAME_AND_LOCATION_INTENT:
+        app.ask(`Nice to meet you ${name}. Would you prefer to go abroad or stay in ${live}?`)
+        break;
+    }
   }
 
-  // d. build an action map, which maps intent names to functions
-  const actionMap = new Map()
-  actionMap.set(NAME_ACTION, getName)
-
-  app.handleRequest(actionMap)
+  // can add function name instead of making a map here
+  app.handleRequest(responseHandler)
 })
+
+// hook this up
+function defaultFallback (app) {
+  const DONE_YES_NO_CONTEXT = 'DONE_YES_NO_CONTEXT'
+
+  app.setContext(DONE_YES_NO_CONTEXT)
+  app.ask('Where do you want to go?', [
+    'I didn\'t hear your answer.',
+    'If you\'re still there, what\'s your desired travel location?',
+    'We can stop here. Let’s plan your trip soon.'
+  ])
+}
