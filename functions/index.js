@@ -19,8 +19,8 @@ class ByLandOrBySea {
   run () {
     strings.setLocale(this.app.getUserLocale())
 
-    const map = this
-      , action = this.app.getIntent()
+    const map = this // missing something here
+        , action = this.app.getIntent()
 
     console.log(action)
 
