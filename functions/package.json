@@ -29,10 +29,10 @@
     "travel"
   ],
   "author": "Eleni Arvanitis",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/DatGreekChick/travel/issues"
   },
   "homepage": "https://github.com/DatGreekChick/travel#readme",
-  "private": true
+  "private": false
 }
