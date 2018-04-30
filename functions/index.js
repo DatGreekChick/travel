@@ -16,7 +16,7 @@ class ByLandOrBySea {
     this.utils = new Utils(this.app)
   }
 
-  run () {
+  run() {
     strings.setLocale(this.app.getUserLocale())
 
     const map = this // missing something here
@@ -31,11 +31,11 @@ class ByLandOrBySea {
     map[action]()
   }
 
-  ask (prompt, ...args) {
+  ask(prompt, ...args) {
     this.utils.send(prompt, args)
   }
 
-  tell (prompt, ...args) {
+  tell(prompt, ...args) {
     this.utils.send(prompt, args, true)
   }
 
@@ -47,20 +47,20 @@ class ByLandOrBySea {
     //
   }
 
-  [Actions.QUIT] () {
+  [Actions.QUIT]() {
     this.tell() // something
   }
 
-  [Actions.PLAN_AGAIN_YES] () {
+  [Actions.PLAN_AGAIN_YES]() {
     //
   }
 
-  [Actions.PLAN_AGAIN_NO] () {
+  [Actions.PLAN_AGAIN_NO]() {
     this.app.setContext(Contexts.QUIT, 1) // check
     this.tell('Let\'s plan a trip soon.')
   }
 
-  [Actions.DEFAULT_FALLBACK] () {
+  [Actions.DEFAULT_FALLBACK]() {
     this.setContext(Contexts.DONE_YES_NO)
     this.ask('Where do you want to go?', [ // this is a particular question, make it more general
       'I didn\'t hear your answer.',
@@ -69,17 +69,17 @@ class ByLandOrBySea {
     ])
   }
 
-  [Actions.DONE_YES] () {
+  [Actions.DONE_YES]() {
     this.app.setContext(Contexts.QUIT, 1) // check
     this.tell('Come back soon') // change
   }
 
-  [Actions.DONE_NO] () {
+  [Actions.DONE_NO]() {
     this.data.fallbackCount = 0
     this.ask(strings.prompts.reAnother)
   }
 
-  [Actions.REPEAT] () {
+  [Actions.REPEAT]() {
     const lastResponse = this.data.lastResponse
     if (lastResponse) {
       return this.utils.sendCompiled(lastResponse) // Currently does not use repeat prompt
